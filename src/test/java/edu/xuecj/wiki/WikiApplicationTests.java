@@ -1,4 +1,4 @@
-package edu.gdkm.wiki;
+package edu.xuecj.wiki;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
