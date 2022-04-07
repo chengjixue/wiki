@@ -1,4 +1,4 @@
-热部署3步骤
+<h2>热部署3步骤</h2><br>
 1.添加 spring-boot-devtools<br>
 2.打开顶部工具栏 File -> Settings -> Default Settings -> Build -> Compiler 然后勾选 Build project automatically 。<br>
 3. Ctrl + Shift + Alt + / 然后进入Registry ，勾选自动编译并调整延时参数。<br>
