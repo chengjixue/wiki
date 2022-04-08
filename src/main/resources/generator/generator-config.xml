@@ -22,9 +22,9 @@
         </commentGenerator>
 
         <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
-                        connectionURL="jdbc:mysql://rm-uf6470s9615e13hc4no.mysql.rds.aliyuncs.com:3306/wikidev?serverTimezone=Asia/Shanghai"
-                        userId="wikidev"
-                        password="wikidevABC123">
+                        connectionURL="jdbc:mysql://rm-wz9qi09l8cdu0oj35co.mysql.rds.aliyuncs.com:3306/wiki?serverTimezone=Asia/Shanghai"
+                        userId="xcj_wiki"
+                        password="825Xcj@!">
         </jdbcConnection>
 
         <!-- domain类的位置 -->
@@ -40,8 +40,8 @@
                              targetPackage="edu.xuecj.wiki.mapper"
                              type="XMLMAPPER"/>
 
-        <table tableName="demo" domainObjectName="Demo"/>
-        <!--<table tableName="ebook"/>-->
+<!--        <table tableName="demo" domainObjectName="Demo"/>-->
+        <table tableName="ebook"/>
         <!--<table tableName="category"/>-->
         <!--<table tableName="doc"/>-->
         <!--<table tableName="content"/>-->
