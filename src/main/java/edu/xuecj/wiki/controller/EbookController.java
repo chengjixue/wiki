@@ -1,6 +1,7 @@
 package edu.xuecj.wiki.controller;
 
 import edu.xuecj.wiki.domain.Ebook;
+import edu.xuecj.wiki.resp.CommonResp;
 import edu.xuecj.wiki.service.EbookService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,8 +22,11 @@ public class EbookController {
     @Resource
     private EbookService ebookService;
     @GetMapping("/list")
-    public List<Ebook> list(){
-        return ebookService.list();
+    public CommonResp list(){
+        CommonResp<List<Ebook>> resp = new CommonResp<>();
+        List<Ebook> list=ebookService.list();
+        resp.setContent(list);
+        return resp;
     }
 
 }
