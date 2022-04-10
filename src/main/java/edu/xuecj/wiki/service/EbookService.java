@@ -7,6 +7,7 @@ import edu.xuecj.wiki.req.EbookReq;
 import edu.xuecj.wiki.resp.EbookResp;
 import edu.xuecj.wiki.utils.CopyUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -29,7 +30,9 @@ public class EbookService {
          * criteria.andNameLike("%"+name+"%");
          * 相当于like的效果，用来模糊查询
          * */
-        criteria.andNameLike("%" + req.getName() + "%");
+        if(!ObjectUtils.isEmpty(req.getName())){
+            criteria.andNameLike("%" + req.getName() + "%");
+        }
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
 
 //        List<EbookResp> respList=new ArrayList<>();
