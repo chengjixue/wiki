@@ -1,10 +1,13 @@
 <template>
+
+
   <a-layout class="ant-layout-has-sider ant-layout">
 
     <a-layout-content style="background:#fff;padding:24px;margin: 0;minHeight:280px" class="ant-layout-content">
       <p>
-        <a-button type="primary" @click="add()" size="large">新增</a-button>
+        <a-button type="primary" @click="add()" size="large">添加</a-button>
       </p>
+
       <a-table
           :columns="columns"
           :row-key="record => record.id"
@@ -14,16 +17,23 @@
           @change="handleTableChange"
       >
         <template #cover="{ text: cover }">
-          <img v-if="cover" :src="cover" alt="avatar"/>
+          <img v-if="cover" :src="cover" alt="avatar" />
         </template>
         <template v-slot:action="{ text, record }">
           <a-space size="small">
             <a-button type="primary" @click="edit(record)">
               编辑
             </a-button>
-            <a-button type="danger">
-              删除
-            </a-button>
+            <a-popconfirm
+                title="删除后不可恢复，确认删除？"
+                ok-text="是"
+                cancel-text="否 "
+                @confirm="handleDelete(record.id)"
+            >
+              <a-button type="danger">
+                删除
+              </a-button>
+            </a-popconfirm>
           </a-space>
         </template>
       </a-table>
@@ -60,8 +70,9 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onMounted, ref} from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import axios from 'axios';
+import {message} from "ant-design-vue";
 
 export default defineComponent({
   name: 'AdminEbook',
@@ -79,7 +90,7 @@ export default defineComponent({
       {
         title: '封面',
         dataIndex: 'cover',
-        slots: {customRender: 'cover'}
+        slots: { customRender: 'cover' }
       },
       {
         title: '名称',
@@ -110,7 +121,7 @@ export default defineComponent({
       {
         title: 'Action',
         key: 'action',
-        slots: {customRender: 'action'}
+        slots: { customRender: 'action' }
       }
     ];
     /**
@@ -121,17 +132,21 @@ export default defineComponent({
       // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
       ebooks.value = [];
       axios.get("/ebook/list", {
-        params: {
+        params:{
           page: params.page,
-          size: params.size
+          size:params.size
         }
       }).then((response) => {
         loading.value = false;
         const data = response.data;
+        if (data.success) {
         ebooks.value = data.content.list;
         // 重置分页按钮
         pagination.value.current = params.page;
         pagination.value.total = data.content.total;
+        }else {
+          message.error(data.message);
+        }
       });
     };
     /**
@@ -163,22 +178,33 @@ export default defineComponent({
         }
       });
     }
-    /*
-    编辑
-    */
+    // 编辑
     const edit = (record: any) => {
       modalVisible.value = true;
       ebook.value = record;
     }
-    // 新增
+    //添加
     const add = () => {
       modalVisible.value = true;
       ebook.value = {};
     }
+    //删除
+    const handleDelete = (id: number) => {
+      axios.delete("/ebook/delete/"+id).then((response) => {
+        const data = response.data; // data => CommonResp
+        if (data.success) {
+          // 重新加载列表
+          handleQuery({
+            page: pagination.value.current,
+            size: pagination.value.pageSize
+          });
+        }
+      });
+    }
     onMounted(() => {
       handleQuery({
         //要求请求参数的对象EbookReq的page，size一样
-        page: 1,
+        page:1,
         size: pagination.value.pageSize,
       });
     });
@@ -188,14 +214,13 @@ export default defineComponent({
       columns,
       loading,
       handleTableChange,
-
       edit,
       add,
-
       ebook,
       modalVisible,
       modalLoading,
       handleModalOK,
+      handleDelete,
     }
   }
 });
