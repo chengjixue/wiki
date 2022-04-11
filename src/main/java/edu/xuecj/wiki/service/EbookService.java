@@ -10,6 +10,8 @@ import edu.xuecj.wiki.req.EbookSaveReq;
 import edu.xuecj.wiki.resp.EbookQueryResp;
 import edu.xuecj.wiki.resp.PageResp;
 import edu.xuecj.wiki.utils.CopyUtil;
+import edu.xuecj.wiki.utils.SnowFlake;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -26,6 +28,8 @@ public class EbookService {
     //    @Resource是jdk自带的注解 也可以用 @Autowired
     @Resource
     private EbookMapper ebookMapper;
+    @Autowired
+    private SnowFlake snowFlake;
 
     public PageResp<EbookQueryResp> list(EbookQueryReq req) {
         EbookExample ebookExample = new EbookExample();
@@ -68,6 +72,7 @@ public class EbookService {
         Ebook ebook = CopyUtil.copy(req, Ebook.class);
         if (ObjectUtils.isEmpty(req.getId())) {
 //            新增
+            ebook.setId(snowFlake.nextId());
             ebookMapper.insert(ebook);
         } else {
 //            更新
