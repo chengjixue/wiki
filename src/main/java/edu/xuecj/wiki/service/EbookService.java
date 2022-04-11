@@ -1,5 +1,7 @@
 package edu.xuecj.wiki.service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import edu.xuecj.wiki.domain.Ebook;
 import edu.xuecj.wiki.domain.EbookExample;
 import edu.xuecj.wiki.mapper.EbookMapper;
@@ -33,7 +35,13 @@ public class EbookService {
         if(!ObjectUtils.isEmpty(req.getName())){
             criteria.andNameLike("%" + req.getName() + "%");
         }
+        PageHelper.startPage(1,3);
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
+
+        PageInfo<Ebook> pageInfo=new PageInfo<>(ebookList);
+        System.out.println( "行数---------"+pageInfo.getTotal()+"页数------------"+
+        pageInfo.getPages()
+        );
 
 //        List<EbookResp> respList=new ArrayList<>();
 //        for (Ebook ebook:ebookList) {
