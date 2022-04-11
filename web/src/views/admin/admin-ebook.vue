@@ -15,12 +15,12 @@
         </template>
         <template v-slot:action="{ text, record }">
           <a-space size="small">
-            <a-button type="primary" >
+            <a-button type="primary">
               编辑
             </a-button>
-              <a-button type="danger">
-                删除
-              </a-button>
+            <a-button type="danger">
+              删除
+            </a-button>
           </a-space>
         </template>
       </a-table>
@@ -38,7 +38,7 @@ export default defineComponent({
     const ebooks = ref();
     const pagination = ref({
       current: 1,
-      pageSize: 2,
+      pageSize: 4,
       total: 0
     });
     const loading = ref(false);
@@ -55,11 +55,11 @@ export default defineComponent({
       },
       {
         title: '分类',
-        dataIndex:'category1Id',
+        dataIndex: 'category1Id',
       },
       {
         title: '分类2',
-        dataIndex:'category2Id'
+        dataIndex: 'category2Id'
       },
       {
         title: '文档数',
@@ -85,14 +85,19 @@ export default defineComponent({
      **/
     const handleQuery = (params: any) => {
       loading.value = true;
-      axios.get("/ebook/list", params)
-          .then((response) => {
-            loading.value = false;
-            const data = response.data;
-            ebooks.value = data.content;
-            // 重置分页按钮
-            pagination.value.current = params.page;
-          });
+      axios.get("/ebook/list?", {
+        params: {
+          page: params.page,
+          size: params.size
+        }
+      }).then((response) => {
+        loading.value = false;
+        const data = response.data;
+        ebooks.value = data.content.list;
+        // 重置分页按钮
+        pagination.value.current = params.page;
+        pagination.value.total = data.content.total;
+      });
     };
 
     /**
@@ -107,7 +112,10 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      handleQuery({});
+      handleQuery({
+        page: 1,
+        size: pagination.value.pageSize
+      });
     });
 
     return {
@@ -120,3 +128,9 @@ export default defineComponent({
   }
 });
 </script>
+<style scoped>
+img {
+  width: 50px;
+  height: 50px;
+}
+</style>
