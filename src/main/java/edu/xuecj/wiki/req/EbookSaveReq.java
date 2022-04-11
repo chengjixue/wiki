@@ -1,6 +1,6 @@
-package edu.xuecj.wiki.resp;
+package edu.xuecj.wiki.req;
 
-public class EbookResp {
+public class EbookSaveReq {
     private Long id;
 
     private String name;
