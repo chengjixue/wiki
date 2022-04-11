@@ -7,6 +7,7 @@ import edu.xuecj.wiki.domain.EbookExample;
 import edu.xuecj.wiki.mapper.EbookMapper;
 import edu.xuecj.wiki.req.EbookReq;
 import edu.xuecj.wiki.resp.EbookResp;
+import edu.xuecj.wiki.resp.PageResp;
 import edu.xuecj.wiki.utils.CopyUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -25,7 +26,7 @@ public class EbookService {
     @Resource
     private EbookMapper ebookMapper;
 
-    public List<EbookResp> list(EbookReq req) {
+    public PageResp<EbookResp> list(EbookReq req) {
         EbookExample ebookExample = new EbookExample();
         EbookExample.Criteria criteria = ebookExample.createCriteria();
         /*
@@ -35,7 +36,7 @@ public class EbookService {
         if(!ObjectUtils.isEmpty(req.getName())){
             criteria.andNameLike("%" + req.getName() + "%");
         }
-        PageHelper.startPage(1,3);
+        PageHelper.startPage(req.getPage(), req.getSize());
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
 
         PageInfo<Ebook> pageInfo=new PageInfo<>(ebookList);
@@ -54,9 +55,12 @@ public class EbookService {
 //            EbookResp ebookResp = CopyUtil.copy(ebook, EbookResp.class);
 //            respList.add(ebookResp);
 //        }
+        PageResp<EbookResp> pageResp = new PageResp<>();
 //        列表复制
         List<EbookResp> list = CopyUtil.copyList(ebookList, EbookResp.class);
-        return list;
+        pageResp.setTotal(pageInfo.getTotal());
+        pageResp.setList(list);
+        return pageResp;
     }
 
 }
