@@ -1,8 +1,10 @@
 package edu.xuecj.wiki.req;
 
+import javax.validation.constraints.NotNull;
+
 public class EbookSaveReq {
     private Long id;
-
+    @NotNull(message = "【名称】不能为空")
     private String name;
 
     private Long category1Id;
