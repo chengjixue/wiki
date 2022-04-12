@@ -33,7 +33,9 @@ public class CategoryService {
 
     public PageResp<CategoryQueryResp> list(CategoryQueryReq req) {
         CategoryExample categoryExample = new CategoryExample();
+        categoryExample.setOrderByClause("sort asc");
         CategoryExample.Criteria criteria = categoryExample.createCriteria();
+
         /*
          * criteria.andNameLike("%"+name+"%");
          * 相当于like的效果，用来模糊查询
@@ -66,6 +68,16 @@ public class CategoryService {
         return pageResp;
     }
 
+    public List<CategoryQueryResp> all() {
+        CategoryExample categoryExample = new CategoryExample();
+//        根据sort排序
+        categoryExample.setOrderByClause("sort asc");
+        List<Category> categoryList = categoryMapper.selectByExample(categoryExample);
+//        列表复制
+        List<CategoryQueryResp> list = CopyUtil.copyList(categoryList, CategoryQueryResp.class);
+        return list;
+    }
+
     public void save(CategorySaveReq req) {
         Category category = CopyUtil.copy(req, Category.class);
         if (ObjectUtils.isEmpty(req.getId())) {
@@ -77,7 +89,8 @@ public class CategoryService {
             categoryMapper.updateByPrimaryKey(category);
         }
     }
-    public void delete(Long id){
+
+    public void delete(Long id) {
         categoryMapper.deleteByPrimaryKey(id);
     }
 

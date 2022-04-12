@@ -2,14 +2,15 @@ package edu.xuecj.wiki.controller;
 
 import edu.xuecj.wiki.req.CategoryQueryReq;
 import edu.xuecj.wiki.req.CategorySaveReq;
-import edu.xuecj.wiki.resp.CommonResp;
 import edu.xuecj.wiki.resp.CategoryQueryResp;
+import edu.xuecj.wiki.resp.CommonResp;
 import edu.xuecj.wiki.resp.PageResp;
 import edu.xuecj.wiki.service.CategoryService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author xuecj
@@ -26,6 +27,12 @@ public class CategoryController {
     public CommonResp list(@Valid CategoryQueryReq req){
         CommonResp<PageResp<CategoryQueryResp>> resp = new CommonResp<>();
         PageResp<CategoryQueryResp> list=categoryService.list(req);
+        resp.setContent(list);
+        return resp;
+    }@GetMapping("/all")
+    public CommonResp all(){
+        CommonResp<List<CategoryQueryResp>> resp = new CommonResp<>();
+        List<CategoryQueryResp> list=categoryService.all();
         resp.setContent(list);
         return resp;
     }
