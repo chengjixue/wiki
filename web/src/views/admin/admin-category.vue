@@ -15,12 +15,12 @@
       <a-table
           :columns="columns"
           :row-key="record => record.id"
-          :data-source="categorys"
+          :data-source="level1"
           :loading="loading"
           :pagination="false"
       >
         <template #cover="{ text: cover }">
-          <img v-if="cover" :src="cover" alt="avatar" />
+          <img v-if="cover" :src="cover" alt="avatar"/>
         </template>
         <template v-slot:action="{ text, record }">
           <a-space size="small">
@@ -67,7 +67,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import {defineComponent, onMounted, ref} from 'vue';
 import axios from 'axios';
 import {message} from "ant-design-vue";
 import {Tool} from "@/util/tool";
@@ -97,9 +97,20 @@ export default defineComponent({
       {
         title: 'Action',
         key: 'action',
-        slots: { customRender: 'action' }
+        slots: {customRender: 'action'}
       }
     ];
+    /*
+    * 一级分类树，children是二级分类
+    * [{
+    * id:"",
+    * name:"",
+    * children:[{
+    * id:"",
+    * name:"",
+    * }]
+    * */
+    const level1 = ref();
     /**
      * 数据查询
      **/
@@ -109,8 +120,13 @@ export default defineComponent({
         loading.value = false;
         const data = response.data;
         if (data.success) {
-        categorys.value = data.content;
-        }else {
+          categorys.value = data.content;
+          console.log("原始数据",categorys.value);
+          //构建一级分类树
+          level1.value=[];
+          level1.value = Tool.array2Tree(categorys.value,0);
+          console.log("树形结构",level1.value);
+        } else {
           message.error(data.message);
         }
       });
@@ -122,7 +138,7 @@ export default defineComponent({
     const handleModalOK = () => {
       modalLoading.value = true;
       axios.post("/category/save", category.value).then((response) => {
-        modalLoading.value=false;
+        modalLoading.value = false;
         const data = response.data; // data => CommonResp
         if (data.success) {
           modalVisible.value = false;
@@ -134,7 +150,7 @@ export default defineComponent({
     // 编辑
     const edit = (record: any) => {
       modalVisible.value = true;
-      category.value= Tool.copy(record);
+      category.value = Tool.copy(record);
     }
     //添加
     const add = () => {
@@ -143,7 +159,7 @@ export default defineComponent({
     }
     //删除
     const handleDelete = (id: number) => {
-      axios.delete("/category/delete/"+id).then((response) => {
+      axios.delete("/category/delete/" + id).then((response) => {
         const data = response.data; // data => CommonResp
         if (data.success) {
           // 重新加载列表
@@ -156,7 +172,8 @@ export default defineComponent({
     });
     return {
       param,
-      categorys,
+      // categorys,
+      level1,
       columns,
       loading,
       edit,
