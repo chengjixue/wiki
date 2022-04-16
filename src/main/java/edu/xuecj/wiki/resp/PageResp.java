@@ -1,8 +1,12 @@
 package edu.xuecj.wiki.resp;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
 import java.util.List;
 
 public class PageResp<T> {
+    @JsonSerialize(using = ToStringSerializer.class)
     private long total;
     private List<T> list;
 

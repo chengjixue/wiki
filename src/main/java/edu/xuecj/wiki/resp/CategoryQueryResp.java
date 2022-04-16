@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 public class CategoryQueryResp {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
-
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long parent;
 
     private String name;

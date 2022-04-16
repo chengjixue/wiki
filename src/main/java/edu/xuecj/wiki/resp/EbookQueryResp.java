@@ -8,9 +8,9 @@ public class EbookQueryResp {
     private Long id;
 
     private String name;
-
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long category1Id;
-
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long category2Id;
 
     private String description;
