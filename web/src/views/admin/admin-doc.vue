@@ -55,6 +55,18 @@
       <a-form-item label="名称">
         <a-input v-model:value="doc.name"/>
       </a-form-item>
+      <a-form-item label="名称">
+        <a-tree-select
+            v-model:value="doc.parent"
+            style="width: 100%"
+            :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+            :tree-data="treeSelectedData"
+            placeholder="请选择父文档"
+            tree-default-expand-all
+            :replaceFields="{title: 'name', value: 'id', key: 'id'}"
+        >
+        </a-tree-select>
+      </a-form-item>
       <a-form-item label="父文档">
         <a-input v-model:value="doc.parent"/>
         <a-select
@@ -65,7 +77,7 @@
             无
           </a-select-option>
           <a-select-option v-for="c in level1" :key="c.id" :value="c.id" :disabled="doc.id === c.id">
-            {{c.name}}
+            {{ c.name }}
           </a-select-option>
         </a-select>
       </a-form-item>
@@ -127,22 +139,27 @@ export default defineComponent({
      **/
     const handleQuery = () => {
       loading.value = true;
+      //如果不清空数据，则编辑保存重新加载数据后在点编辑会显示未编辑前的数据
+      level1.value = [];
       axios.get("/doc/all",).then((response) => {
         loading.value = false;
         const data = response.data;
         if (data.success) {
           docs.value = data.content;
-          console.log("原始数据",docs.value);
+          console.log("原始数据", docs.value);
           //构建一级文档树
-          level1.value=[];
-          level1.value = Tool.array2Tree(docs.value,0);
-          console.log("树形结构",level1.value);
+          level1.value = [];
+          level1.value = Tool.array2Tree(docs.value, 0);
+          console.log("树形结构", level1.value);
         } else {
           message.error(data.message);
         }
       });
     };
-    //表单
+    //--------表单-------------
+    //因为树选择组件的属性状态，会随当前编辑的节点而变化,所以单独声明一个响应式变量
+    const treeSelectedData = ref();
+    treeSelectedData.value = [];
     const doc = ref({});
     const modalVisible = ref(false);
     const modalLoading = ref(false);
@@ -158,15 +175,62 @@ export default defineComponent({
         }
       });
     }
+    /*
+    * 将某节点及其子孙节点全部设置为disabled
+    * */
+    const setDisabled = (treeSelectedData: any, id: any) => {
+      //  遍历数组，即遍历某一层节点
+      for (let i = 0; i < treeSelectedData.length; i++) {
+        const node = treeSelectedData[i];
+        if (node.id === id) {
+          //如果当前就是目标节点
+          console.log("disabled", node);
+          //将目标节点设置为disabled
+          node.disabled = true;
+          // 如果有子节点，则递归调用，将其子节点设置为disabled
+          const children = node.children;
+          if (Tool.isNotEmpty(children)) {
+            for (let j = 0; j < children.length; j++) {
+              const child = children[j];
+              setDisabled(children, child[j].id);
+            }
+          }
+        } else {
+          //  如果当前目标节点不是目标节点，则其子系节点在找
+          const children = node.children;
+          if (Tool.isNotEmpty(children)) {
+            setDisabled(children, id);
+          }
+        }
+      }
+    };
+
+
     // 编辑
     const edit = (record: any) => {
       modalVisible.value = true;
       doc.value = Tool.copy(record);
+      //不能选择当前节点及其所有子孙节点作为父节点，会导致树断开
+      treeSelectedData.value = Tool.copy(level1.value);
+      setDisabled(treeSelectedData.value, record.id);
+      //  为选择树添加一个无
+      treeSelectedData.value.unshift({
+        id: 0,
+        name: "无"
+      });
     }
     //添加
     const add = () => {
       modalVisible.value = true;
       doc.value = {};
+
+      treeSelectedData.value = Tool.copy(level1.value);
+
+      // 为选择树添加一个无
+      treeSelectedData.value.unshift({
+        id: 0,
+        name: "无"
+      });
     }
     //删除
     const handleDelete = (id: number) => {
@@ -194,7 +258,8 @@ export default defineComponent({
       modalLoading,
       handleModalOK,
       handleDelete,
-      handleQuery
+      handleQuery,
+      treeSelectedData
     }
   }
 });

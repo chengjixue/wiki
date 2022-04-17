@@ -127,6 +127,8 @@ export default defineComponent({
      **/
     const handleQuery = () => {
       loading.value = true;
+      //如果不清空数据，则编辑保存重新加载数据后在点编辑会显示未编辑前的数据
+      level1.value = [];
       axios.get("/category/all",).then((response) => {
         loading.value = false;
         const data = response.data;
