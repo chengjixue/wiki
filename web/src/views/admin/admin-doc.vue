@@ -103,7 +103,6 @@ export default defineComponent({
     const route =useRoute();
     console.log("路由",route);
     console.log("路由",route.query);
-
     const param = ref();
     param.value = {};
     const docs = ref();
@@ -197,7 +196,7 @@ export default defineComponent({
           if (Tool.isNotEmpty(children)) {
             for (let j = 0; j < children.length; j++) {
               const child = children[j];
-              setDisabled(children, child[j].id);
+              setDisabled(children, children[j].id);
             }
           }
         } else {
@@ -205,6 +204,38 @@ export default defineComponent({
           const children = node.children;
           if (Tool.isNotEmpty(children)) {
             setDisabled(children, id);
+          }
+        }
+      }
+    };
+
+ /*
+    * 查找整根树枝
+    * */
+    const ids: Array<string> = [];
+    const getDeleteIds = (treeSelectedData: any, id: any) => {
+      //  遍历数组，即遍历某一层节点
+      for (let i = 0; i < treeSelectedData.length; i++) {
+        const node = treeSelectedData[i];
+        if (node.id === id) {
+          //如果当前就是目标节点
+          console.log("delete", node);
+          //将目标id放入结果集ids
+          // node.disabled = true;
+          ids.push(id);
+          // 如果有子节点，则递归调用
+          const children = node.children;
+          if (Tool.isNotEmpty(children)) {
+            for (let j = 0; j < children.length; j++) {
+              const child = children[j];
+              getDeleteIds(children, children[j].id);
+            }
+          }
+        } else {
+          //  如果当前目标节点不是目标节点，则其子系节点在找
+          const children = node.children;
+          if (Tool.isNotEmpty(children)) {
+            getDeleteIds(children, id);
           }
         }
       }
@@ -240,8 +271,12 @@ export default defineComponent({
       });
     }
     //删除
+
     const handleDelete = (id: number) => {
-      axios.delete("/doc/delete/" + id).then((response) => {
+     console.log(level1,level1.value, id);
+      getDeleteIds(level1.value, id);
+      console.log("============="+ids);
+      axios.delete("/doc/delete/" + ids.join(",")).then((response) => {
         const data = response.data; // data => CommonResp
         if (data.success) {
           // 重新加载列表
@@ -266,7 +301,7 @@ export default defineComponent({
       handleModalOK,
       handleDelete,
       handleQuery,
-      treeSelectedData
+      treeSelectedData,
     }
   }
 });
