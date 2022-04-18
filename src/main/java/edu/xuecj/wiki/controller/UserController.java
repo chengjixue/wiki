@@ -1,6 +1,7 @@
 package edu.xuecj.wiki.controller;
 
 import edu.xuecj.wiki.req.UserQueryReq;
+import edu.xuecj.wiki.req.UserResetPasswordReq;
 import edu.xuecj.wiki.req.UserSaveReq;
 import edu.xuecj.wiki.resp.CommonResp;
 import edu.xuecj.wiki.resp.UserQueryResp;
@@ -45,6 +46,13 @@ public class UserController {
         return resp;
     }
 
+    @PostMapping("/reset-password")
+    public CommonResp resetPassword(@Valid @RequestBody UserResetPasswordReq req){
+        req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
+        CommonResp resp = new CommonResp<>();
+        userService.resetPassword(req);
+        return resp;
+    }
 
 
 }

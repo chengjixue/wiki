@@ -8,6 +8,7 @@ import edu.xuecj.wiki.exception.BusinessException;
 import edu.xuecj.wiki.exception.BusinessExceptionCode;
 import edu.xuecj.wiki.mapper.UserMapper;
 import edu.xuecj.wiki.req.UserQueryReq;
+import edu.xuecj.wiki.req.UserResetPasswordReq;
 import edu.xuecj.wiki.req.UserSaveReq;
 import edu.xuecj.wiki.resp.PageResp;
 import edu.xuecj.wiki.resp.UserQueryResp;
@@ -102,6 +103,12 @@ public class UserService {
             return userList.get(0);
         }
     }
-
+    /*
+    * 修改密码
+    * */
+    public void resetPassword(UserResetPasswordReq req) {
+        User user = CopyUtil.copy(req, User.class);
+        userMapper.updateByPrimaryKeySelective(user);
+    }
 
 }
