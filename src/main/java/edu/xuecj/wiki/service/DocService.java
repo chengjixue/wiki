@@ -92,7 +92,7 @@ public class DocService {
 //            新增
             doc.setId(snowFlake.nextId());
             docMapper.insert(doc);
-            doc.setId(doc.getId());
+            content.setId(doc.getId());
             contentMapper.insert(content);
         } else {
 //            更新

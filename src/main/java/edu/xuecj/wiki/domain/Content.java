@@ -1,6 +1,10 @@
 package edu.xuecj.wiki.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
 public class Content {
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     private String content;
