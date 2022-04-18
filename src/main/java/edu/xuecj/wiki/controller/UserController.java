@@ -6,6 +6,7 @@ import edu.xuecj.wiki.resp.CommonResp;
 import edu.xuecj.wiki.resp.UserQueryResp;
 import edu.xuecj.wiki.resp.PageResp;
 import edu.xuecj.wiki.service.UserService;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -31,6 +32,7 @@ public class UserController {
     }
     @PostMapping("/save")
     public CommonResp save(@Valid @RequestBody UserSaveReq req){
+        req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
         CommonResp resp = new CommonResp<>();
         userService.save(req);
         return resp;

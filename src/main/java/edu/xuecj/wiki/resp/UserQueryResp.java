@@ -1,6 +1,10 @@
 package edu.xuecj.wiki.resp;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
 public class UserQueryResp {
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     private String loginName;
