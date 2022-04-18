@@ -2,8 +2,10 @@ package edu.xuecj.wiki.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import edu.xuecj.wiki.domain.Content;
 import edu.xuecj.wiki.domain.Doc;
 import edu.xuecj.wiki.domain.DocExample;
+import edu.xuecj.wiki.mapper.ContentMapper;
 import edu.xuecj.wiki.mapper.DocMapper;
 import edu.xuecj.wiki.req.DocQueryReq;
 import edu.xuecj.wiki.req.DocSaveReq;
@@ -11,7 +13,6 @@ import edu.xuecj.wiki.resp.DocQueryResp;
 import edu.xuecj.wiki.resp.PageResp;
 import edu.xuecj.wiki.utils.CopyUtil;
 import edu.xuecj.wiki.utils.SnowFlake;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -28,8 +29,10 @@ public class DocService {
     //    @Resource是jdk自带的注解 也可以用 @Autowired
     @Resource
     private DocMapper docMapper;
-    @Autowired
+    @Resource
     private SnowFlake snowFlake;
+    @Resource
+    private ContentMapper contentMapper;
 
     public PageResp<DocQueryResp> list(DocQueryReq req) {
         DocExample docExample = new DocExample();
@@ -78,15 +81,25 @@ public class DocService {
         return list;
     }
 
+    /*
+    * 保存
+    * */
     public void save(DocSaveReq req) {
         Doc doc = CopyUtil.copy(req, Doc.class);
+        Content content = CopyUtil.copy(req, Content.class);
         if (ObjectUtils.isEmpty(req.getId())) {
 //            新增
             doc.setId(snowFlake.nextId());
             docMapper.insert(doc);
+            doc.setId(doc.getId());
+            contentMapper.insert(content);
         } else {
 //            更新
             docMapper.updateByPrimaryKey(doc);
+           int count= contentMapper.updateByPrimaryKeyWithBLOBs(content);
+            if (count==0){
+                contentMapper.insert(content);
+            }
         }
     }
 
