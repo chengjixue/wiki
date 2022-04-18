@@ -144,7 +144,7 @@ export default defineComponent({
       loading.value = true;
       //如果不清空数据，则编辑保存重新加载数据后在点编辑会显示未编辑前的数据
       level1.value = [];
-      axios.get("/doc/all").then((response) => {
+      axios.get("/doc/all/"+route.query.ebookId).then((response) => {
         loading.value = false;
         const data = response.data;
         if (data.success) {
