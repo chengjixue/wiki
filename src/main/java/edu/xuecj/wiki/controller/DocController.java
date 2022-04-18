@@ -32,7 +32,6 @@ public class DocController {
         resp.setContent(list);
         return resp;
     }
-
     @GetMapping("/all")
     public CommonResp all() {
         CommonResp<List<DocQueryResp>> resp = new CommonResp<>();
@@ -55,6 +54,12 @@ public class DocController {
         docService.delete(list);
         return resp;
     }
-
+    @GetMapping("/find-content/{id}")
+    public CommonResp findContent(@Valid Long id) {
+        CommonResp<String> resp = new CommonResp<>();
+        String content = docService.findContent(id);
+        resp.setContent(content);
+        return resp;
+    }
 
 }

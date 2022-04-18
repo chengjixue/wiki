@@ -82,8 +82,8 @@ public class DocService {
     }
 
     /*
-    * 保存
-    * */
+     * 保存
+     * */
     public void save(DocSaveReq req) {
         Doc doc = CopyUtil.copy(req, Doc.class);
         Content content = CopyUtil.copy(req, Content.class);
@@ -96,8 +96,8 @@ public class DocService {
         } else {
 //            更新
             docMapper.updateByPrimaryKey(doc);
-           int count= contentMapper.updateByPrimaryKeyWithBLOBs(content);
-            if (count==0){
+            int count = contentMapper.updateByPrimaryKeyWithBLOBs(content);
+            if (count == 0) {
                 contentMapper.insert(content);
             }
         }
@@ -106,6 +106,7 @@ public class DocService {
     public void delete(Long id) {
         docMapper.deleteByPrimaryKey(id);
     }
+
     public void delete(List<String> ids) {
         DocExample docExample = new DocExample();
         DocExample.Criteria criteria = docExample.createCriteria();
@@ -113,5 +114,9 @@ public class DocService {
         docMapper.deleteByExample(docExample);
     }
 
+    public String findContent(Long id) {
+        Content content = contentMapper.selectByPrimaryKey(id);
+        return content.getContent();
+    }
 
 }
