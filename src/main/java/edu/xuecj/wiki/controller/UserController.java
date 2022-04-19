@@ -5,15 +5,18 @@ import edu.xuecj.wiki.req.UserQueryReq;
 import edu.xuecj.wiki.req.UserResetPasswordReq;
 import edu.xuecj.wiki.req.UserSaveReq;
 import edu.xuecj.wiki.resp.CommonResp;
+import edu.xuecj.wiki.resp.PageResp;
 import edu.xuecj.wiki.resp.UserLoginResp;
 import edu.xuecj.wiki.resp.UserQueryResp;
-import edu.xuecj.wiki.resp.PageResp;
 import edu.xuecj.wiki.service.UserService;
+import edu.xuecj.wiki.utils.SnowFlake;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author xuecj
@@ -26,6 +29,10 @@ import javax.validation.Valid;
 public class UserController {
     @Resource
     private UserService userService;
+    @Resource
+    private RedisTemplate redisTemplate;
+    @Resource
+    private SnowFlake snowFlake;
 
     @GetMapping("/list")
     public CommonResp list(@Valid UserQueryReq req) {
@@ -63,6 +70,11 @@ public class UserController {
         req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
         CommonResp<UserLoginResp> resp = new CommonResp<>();
         UserLoginResp userLoginResp = userService.login(req);
+//        生成单点登录token，并放入redis
+        Long token = snowFlake.nextId();
+        System.out.println(token);
+        userLoginResp.setToken(token.toString());
+        redisTemplate.opsForValue().set(token, userLoginResp, 60 * 60 * 24, TimeUnit.SECONDS);
         resp.setContent(userLoginResp);
         return resp;
     }
