@@ -1,9 +1,11 @@
 package edu.xuecj.wiki.controller;
 
+import edu.xuecj.wiki.req.UserLoginReq;
 import edu.xuecj.wiki.req.UserQueryReq;
 import edu.xuecj.wiki.req.UserResetPasswordReq;
 import edu.xuecj.wiki.req.UserSaveReq;
 import edu.xuecj.wiki.resp.CommonResp;
+import edu.xuecj.wiki.resp.UserLoginResp;
 import edu.xuecj.wiki.resp.UserQueryResp;
 import edu.xuecj.wiki.resp.PageResp;
 import edu.xuecj.wiki.service.UserService;
@@ -24,15 +26,17 @@ import javax.validation.Valid;
 public class UserController {
     @Resource
     private UserService userService;
+
     @GetMapping("/list")
-    public CommonResp list(@Valid UserQueryReq req){
+    public CommonResp list(@Valid UserQueryReq req) {
         CommonResp<PageResp<UserQueryResp>> resp = new CommonResp<>();
-        PageResp<UserQueryResp> list=userService.list(req);
+        PageResp<UserQueryResp> list = userService.list(req);
         resp.setContent(list);
         return resp;
     }
+
     @PostMapping("/save")
-    public CommonResp save(@Valid @RequestBody UserSaveReq req){
+    public CommonResp save(@Valid @RequestBody UserSaveReq req) {
         req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
         CommonResp resp = new CommonResp<>();
         userService.save(req);
@@ -40,17 +44,26 @@ public class UserController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public CommonResp delete(@PathVariable("id") Long id){
+    public CommonResp delete(@PathVariable("id") Long id) {
         CommonResp resp = new CommonResp<>();
         userService.delete(id);
         return resp;
     }
 
     @PostMapping("/reset-password")
-    public CommonResp resetPassword(@Valid @RequestBody UserResetPasswordReq req){
+    public CommonResp resetPassword(@Valid @RequestBody UserResetPasswordReq req) {
         req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
         CommonResp resp = new CommonResp<>();
         userService.resetPassword(req);
+        return resp;
+    }
+
+    @PostMapping("/login")
+    public CommonResp login(@Valid @RequestBody UserLoginReq req) {
+        req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
+        CommonResp<UserLoginResp> resp = new CommonResp<>();
+        UserLoginResp userLoginResp = userService.login(req);
+        resp.setContent(userLoginResp);
         return resp;
     }
 

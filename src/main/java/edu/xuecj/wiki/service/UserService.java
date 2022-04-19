@@ -7,10 +7,12 @@ import edu.xuecj.wiki.domain.UserExample;
 import edu.xuecj.wiki.exception.BusinessException;
 import edu.xuecj.wiki.exception.BusinessExceptionCode;
 import edu.xuecj.wiki.mapper.UserMapper;
+import edu.xuecj.wiki.req.UserLoginReq;
 import edu.xuecj.wiki.req.UserQueryReq;
 import edu.xuecj.wiki.req.UserResetPasswordReq;
 import edu.xuecj.wiki.req.UserSaveReq;
 import edu.xuecj.wiki.resp.PageResp;
+import edu.xuecj.wiki.resp.UserLoginResp;
 import edu.xuecj.wiki.resp.UserQueryResp;
 import edu.xuecj.wiki.utils.CopyUtil;
 import edu.xuecj.wiki.utils.SnowFlake;
@@ -103,12 +105,36 @@ public class UserService {
             return userList.get(0);
         }
     }
+
     /*
-    * 修改密码
-    * */
+     * 修改密码
+     * */
     public void resetPassword(UserResetPasswordReq req) {
         User user = CopyUtil.copy(req, User.class);
         userMapper.updateByPrimaryKeySelective(user);
+    }
+
+    /*
+     * 登录
+     * */
+    public UserLoginResp login(UserLoginReq req) {
+        User userDb = selectByLoginName(req.getLoginName());
+        if (ObjectUtils.isEmpty(userDb)) {
+//       用户名不存在
+            System.out.println("用户名不存在"+req.getLoginName());
+            throw new BusinessException(BusinessExceptionCode.Login_NAME_OR_PASSWORD_ERROR);
+        } else {
+            if (userDb.getPassword().equals(req.getPassword())) {
+//           登录成功
+                UserLoginResp userLoginResp = CopyUtil.copy(userDb, UserLoginResp.class);
+                return userLoginResp;
+            } else {
+//           密码错误
+                System.out.println("密码错误");
+                throw new BusinessException(BusinessExceptionCode.Login_NAME_OR_PASSWORD_ERROR);
+            }
+        }
+
     }
 
 }
