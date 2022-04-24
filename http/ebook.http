@@ -1,5 +1,7 @@
 GET http://127.0.0.1:8080/ebook/list?page=2&size=10000
 
 ###
-#POST http://127.0.0.1:8080/ebook/save
-#Content-Type:application/json
+POST http://127.0.0.1:8080/ebook/save
+Content-Type:application/json
+header:toke
+{}

@@ -74,7 +74,7 @@ public class UserController {
         Long token = snowFlake.nextId();
         System.out.println(token);
         userLoginResp.setToken(token.toString());
-        redisTemplate.opsForValue().set(token, userLoginResp, 60 * 60 * 24, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(token.toString(), userLoginResp, 60 * 60 * 24, TimeUnit.SECONDS);
         resp.setContent(userLoginResp);
         return resp;
     }
