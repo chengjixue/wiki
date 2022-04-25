@@ -18,7 +18,6 @@ import edu.xuecj.wiki.utils.CopyUtil;
 import edu.xuecj.wiki.utils.RedisUtil;
 import edu.xuecj.wiki.utils.RequestContext;
 import edu.xuecj.wiki.utils.SnowFlake;
-import edu.xuecj.wiki.websocket.WebSocketServer;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -44,7 +43,7 @@ public class DocService {
     @Resource
     private RedisUtil redisUtil;
     @Resource
-    private WebSocketServer webSocketServer;
+    private WsService wsService;
 
     public PageResp<DocQueryResp> list(DocQueryReq req) {
         DocExample docExample = new DocExample();
@@ -151,10 +150,12 @@ public class DocService {
             throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
         }
 //        推送消息
+
         Doc docDB=docMapper.selectByPrimaryKey(id);
-        webSocketServer.sendInfo("【"+docDB.getName()+"】被点赞了");
-        System.out.println("【"+docDB.getName()+"】被点赞了");
+        wsService.sendInfo("【"+docDB.getName()+"】被点赞了");
     }
+
+
     public void updateEbookInfo(){
         docMapperCust.updateEbookInfo();
     }
