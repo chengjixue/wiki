@@ -18,7 +18,9 @@ import edu.xuecj.wiki.utils.CopyUtil;
 import edu.xuecj.wiki.utils.RedisUtil;
 import edu.xuecj.wiki.utils.RequestContext;
 import edu.xuecj.wiki.utils.SnowFlake;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
@@ -96,6 +98,7 @@ public class DocService {
     /*
      * 保存
      * */
+
     public void save(DocSaveReq req) {
         Doc doc = CopyUtil.copy(req, Doc.class);
         Content content = CopyUtil.copy(req, Content.class);
@@ -152,7 +155,8 @@ public class DocService {
 //        推送消息
 
         Doc docDB=docMapper.selectByPrimaryKey(id);
-        wsService.sendInfo("【"+docDB.getName()+"】被点赞了");
+       String logId= MDC.get("LOG_ID");
+        wsService.sendInfo("【"+docDB.getName()+"】被点赞了",logId);
     }
 
 
