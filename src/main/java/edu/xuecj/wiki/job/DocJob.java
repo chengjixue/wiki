@@ -23,6 +23,10 @@ public class DocJob {
     DocService docService;
     @Scheduled(cron = "5/30 * * * * ?")
     public void cron(){
+        LOG.info("开始更新电子书下的文档数据");
+       long start= System.currentTimeMillis();
         docService.updateEbookInfo();
+        long end=System.currentTimeMillis();
+        LOG.info("更新电子书下的文档数据完成,耗时{}",end-start);
     }
 }
