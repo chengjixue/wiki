@@ -5,5 +5,8 @@
     <update id="increaseViewCount">
         UPDATE doc set view_count =view_count+1 WHERE id=#{id}
     </update>
+    <update id="increaseVoteCount">
+        UPDATE doc set vote_count =vote_count+1 WHERE id=#{id}
+    </update>
 
 </mapper>
