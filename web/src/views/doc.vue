@@ -119,7 +119,6 @@ export default defineComponent({
         const data = response.data;
         if (data.success) {
           doc.value.voteCount++;
-          message.success("点赞成功");
         } else {
           message.error(data.message);
         }
