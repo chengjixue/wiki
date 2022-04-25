@@ -98,7 +98,7 @@ public class DocService {
     /*
      * 保存
      * */
-
+    @Transactional
     public void save(DocSaveReq req) {
         Doc doc = CopyUtil.copy(req, Doc.class);
         Content content = CopyUtil.copy(req, Content.class);
