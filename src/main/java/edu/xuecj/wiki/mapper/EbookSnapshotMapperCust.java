@@ -1,5 +1,9 @@
 package edu.xuecj.wiki.mapper;
 
+import edu.xuecj.wiki.resp.StatisticResp;
+
+import java.util.List;
+
 /**
  * @author xuecj
  * @version 1.0
@@ -7,4 +11,5 @@ package edu.xuecj.wiki.mapper;
  */
 public interface EbookSnapshotMapperCust {
     public void genSnapshot();
+    public List<StatisticResp> getStatistic();
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-    <mapper namespace="edu.xuecj.wiki.mapper.EbookSnapshotMapperCust">
+<mapper namespace="edu.xuecj.wiki.mapper.EbookSnapshotMapperCust">
     <!--
     方案1：（ID不连续）
     删除今天的数据
@@ -12,24 +12,40 @@
     更新今天的阅读数，点赞数
     -->
     <update id="genSnapshot">
-        INSERT INTO ebook_snapshot(ebook_id,`date`,view_count,vote_count,view_increase,vote_increase)
-        SELECT t1.id,CURDATE(),0,0,0,0 FROM ebook t1 WHERE NOT EXISTS(SELECT 1 FROM ebook_snapshot t2 WHERE
-            t1.id=t2.ebook_id AND t2.`date`=CURDATE());
+        INSERT INTO ebook_snapshot(ebook_id, `date`, view_count, vote_count, view_increase, vote_increase)
+        SELECT t1.id, CURDATE(), 0, 0, 0, 0
+        FROM ebook t1
+        WHERE NOT EXISTS(SELECT 1
+                         FROM ebook_snapshot t2
+                         WHERE t1.id = t2.ebook_id
+                           AND t2.`date` = CURDATE());
 
 
         UPDATE ebook_snapshot t1,ebook t2
         SET t1.view_count=t2.view_count,
             t1.vote_count=t2.vote_count
-        WHERE t1.`DATE` =CURDATE()
-          AND t1.ebook_id=t2.id;
+        WHERE t1.`DATE` = CURDATE()
+          AND t1.ebook_id = t2.id;
 
-        UPDATE ebook_snapshot t1 LEFT JOIN (SELECT ebook_id,view_count,vote_count FROM ebook_snapshot
-                                            WHERE `date`=DATE_SUB(CURDATE(),INTERVAL 1 day)) t2
-            ON t1.ebook_id=t2.ebook_id
-        SET t1.view_increase=(t1.view_count-IFNULL(t2.view_count,0)),
-            t1.vote_increase=(t1.vote_count-IFNULL(t2.vote_count,0))
-        WHERE t1.`date`=CURDATE();
-
+        UPDATE ebook_snapshot t1 LEFT JOIN (SELECT ebook_id, view_count, vote_count
+                                            FROM ebook_snapshot
+                                            WHERE `date` = DATE_SUB(CURDATE(), INTERVAL 1 day)) t2
+            ON t1.ebook_id = t2.ebook_id
+        SET t1.view_increase=(t1.view_count - IFNULL(t2.view_count, 0)),
+            t1.vote_increase=(t1.vote_count - IFNULL(t2.vote_count, 0))
+        WHERE t1.`date` = CURDATE();
     </update>
 
+    <!--获取首页数据：总阅读数，总点赞数，今日阅读数，今日点赞数，今日预计阅读数，今日预计阅读增长数-->
+    <select id="getStatistic" resultType="edu.xuecj.wiki.resp.StatisticResp">
+        SELECT t1.`date`             as `date`,
+               SUM(t1.view_count)    AS view_count,
+               SUM(t1.vote_count)    AS vote_count,
+               SUM(t1.view_increase) AS view_increase,
+               SUM(t1.vote_increase) AS vote_increase
+        FROM ebook_snapshot t1
+        WHERE `date` >= DATE_SUB(CURDATE(), INTERVAL 1 day)
+        GROUP BY t1.`date`
+        order by t1.`date` asc
+    </select>
 </mapper>

@@ -1,8 +1,11 @@
 package edu.xuecj.wiki.service;
 
 import edu.xuecj.wiki.mapper.EbookSnapshotMapperCust;
+import edu.xuecj.wiki.resp.StatisticResp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author xuecj
@@ -17,4 +20,10 @@ public class EbookSnapshotService {
         ebookSnapshotMapperCust.genSnapshot();
     }
 
+    /*
+    * 获取首页数值数据：总阅读数，今日阅读数
+    * */
+    public List<StatisticResp> getStatistic(){
+        return ebookSnapshotMapperCust.getStatistic();
+    }
 }
