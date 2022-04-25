@@ -5,6 +5,8 @@ import com.github.pagehelper.PageInfo;
 import edu.xuecj.wiki.domain.Content;
 import edu.xuecj.wiki.domain.Doc;
 import edu.xuecj.wiki.domain.DocExample;
+import edu.xuecj.wiki.exception.BusinessException;
+import edu.xuecj.wiki.exception.BusinessExceptionCode;
 import edu.xuecj.wiki.mapper.ContentMapper;
 import edu.xuecj.wiki.mapper.DocMapper;
 import edu.xuecj.wiki.mapper.DocMapperCust;
@@ -13,6 +15,8 @@ import edu.xuecj.wiki.req.DocSaveReq;
 import edu.xuecj.wiki.resp.DocQueryResp;
 import edu.xuecj.wiki.resp.PageResp;
 import edu.xuecj.wiki.utils.CopyUtil;
+import edu.xuecj.wiki.utils.RedisUtil;
+import edu.xuecj.wiki.utils.RequestContext;
 import edu.xuecj.wiki.utils.SnowFlake;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -36,6 +40,8 @@ public class DocService {
     private ContentMapper contentMapper;
     @Resource
     private DocMapperCust docMapperCust;
+    @Resource
+    private RedisUtil redisUtil;
 
     public PageResp<DocQueryResp> list(DocQueryReq req) {
         DocExample docExample = new DocExample();
@@ -134,7 +140,12 @@ public class DocService {
     * 点赞
     * */
     public void vote(Long id) {
-        docMapperCust.increaseVoteCount(id);
+//        远程ip+doc。id作为key，24小时不能重赴
+        String ip = RequestContext.getRemoteAddr();
+        if (redisUtil.validateRepeat("doc_vote" + id + "_" + ip, 3600 * 24)) {
+            docMapperCust.increaseVoteCount(id);
+        } else {
+            throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
+        }
     }
-
 }
