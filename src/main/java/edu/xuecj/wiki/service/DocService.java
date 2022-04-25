@@ -7,6 +7,7 @@ import edu.xuecj.wiki.domain.Doc;
 import edu.xuecj.wiki.domain.DocExample;
 import edu.xuecj.wiki.mapper.ContentMapper;
 import edu.xuecj.wiki.mapper.DocMapper;
+import edu.xuecj.wiki.mapper.DocMapperCust;
 import edu.xuecj.wiki.req.DocQueryReq;
 import edu.xuecj.wiki.req.DocSaveReq;
 import edu.xuecj.wiki.resp.DocQueryResp;
@@ -33,6 +34,8 @@ public class DocService {
     private SnowFlake snowFlake;
     @Resource
     private ContentMapper contentMapper;
+    @Resource
+    private DocMapperCust docMapperCust;
 
     public PageResp<DocQueryResp> list(DocQueryReq req) {
         DocExample docExample = new DocExample();
@@ -91,6 +94,8 @@ public class DocService {
         if (ObjectUtils.isEmpty(req.getId())) {
 //            新增
             doc.setId(snowFlake.nextId());
+            doc.setViewCount(0);
+            doc.setVoteCount(0);
             docMapper.insert(doc);
             content.setId(doc.getId());
             contentMapper.insert(content);
@@ -117,6 +122,8 @@ public class DocService {
 
     public String findContent(Long id) {
         Content content = contentMapper.selectByPrimaryKey(id);
+//        文档书加一
+        docMapperCust.increaseViewCount(id);
         if (ObjectUtils.isEmpty(content)) {
             return "";
         } else {
