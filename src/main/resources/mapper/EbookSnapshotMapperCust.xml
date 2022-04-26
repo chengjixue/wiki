@@ -39,13 +39,13 @@
     <!--获取首页数据：总阅读数，总点赞数，今日阅读数，今日点赞数，今日预计阅读数，今日预计阅读增长数-->
     <select id="getStatistic" resultType="edu.xuecj.wiki.resp.StatisticResp">
         SELECT t1.`date`             as `date`,
-               SUM(t1.view_count)    AS view_count,
-               SUM(t1.vote_count)    AS vote_count,
-               SUM(t1.view_increase) AS view_increase,
-               SUM(t1.vote_increase) AS vote_increase
+               SUM(t1.view_count)    AS viewCount,
+               SUM(t1.vote_count)    AS voteCount,
+               SUM(t1.view_increase) AS viewIncrease,
+               SUM(t1.vote_increase) AS voteIncrease
         FROM ebook_snapshot t1
         WHERE `date` >= DATE_SUB(CURDATE(), INTERVAL 1 day)
         GROUP BY t1.`date`
-        order by t1.`date` asc
+        order by t1.`date` asc;
     </select>
 </mapper>
