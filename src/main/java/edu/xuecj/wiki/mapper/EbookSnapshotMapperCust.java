@@ -12,4 +12,5 @@ import java.util.List;
 public interface EbookSnapshotMapperCust {
     public void genSnapshot();
     public List<StatisticResp> getStatistic();
+    public List<StatisticResp> get30Statistic();
 }

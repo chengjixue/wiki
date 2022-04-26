@@ -16,14 +16,18 @@ import java.util.List;
 public class EbookSnapshotService {
     @Autowired
     private EbookSnapshotMapperCust ebookSnapshotMapperCust;
+
     public void genSnapshot() {
         ebookSnapshotMapperCust.genSnapshot();
     }
 
     /*
-    * 获取首页数值数据：总阅读数，今日阅读数
-    * */
-    public List<StatisticResp> getStatistic(){
+     * 获取首页数值数据：总阅读数，今日阅读数
+     * */
+    public List<StatisticResp> getStatistic() {
         return ebookSnapshotMapperCust.getStatistic();
+    }
+    public List<StatisticResp> get30Statistic() {
+        return ebookSnapshotMapperCust.get30Statistic();
     }
 }
